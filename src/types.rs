@@ -95,10 +95,10 @@ pub struct Data {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct TextCheckResponse {
-    pub request_id: Option<String>,
-    pub code: Option<i32>,
-    pub message: Option<String>,
-    pub data: Option<Data>,
+    pub request_id: String,
+    pub code: i32,
+    pub message: String,
+    pub data: Data,
 }
 
 
