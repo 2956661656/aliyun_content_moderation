@@ -1,0 +1,26 @@
+[package]
+name = "aliyun_content_moderation"
+version = "0.1.0"
+edition = "2021"
+authors = ["Hjerau <2956661656@qq.com>"]
+description = "这是一个简易版的 Rust 客户端，用于以 HTTPS 原生方式调用阿里云内容安全（文本/图片/音频/视频）相关接口。"
+license = "Apache-2.0"  # 必填，至少一种开源协议
+keywords = ["ali", "阿里", "阿里云", "aliyun", "alicloud"]
+categories = ["development-tools::build-utils"]
+
+[dependencies]
+reqwest = { version = "0.12.24", features = ["json", "gzip", "brotli", "rustls-tls"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.4", features = ["v4"] }
+sha2 = "0.10"
+thiserror = "2.0.17"
+percent-encoding = "2.3.2"
+hmac = "0.12"
+sha1 = "0.10"
+base64 = "0.21"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+log = "0.4.28"
+config = "0.15.18"
