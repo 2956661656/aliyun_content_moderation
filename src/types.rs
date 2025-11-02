@@ -31,62 +31,62 @@ pub struct TextCheckRequest<'a> {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct SensitiveResult{
-    label: Option<String>,
-    sensitive_level: Option<String>,
-    sensitive_data: Option<Vec<String>>,
-    description: Option<String>,
+    pub label: Option<String>,
+    pub sensitive_level: Option<String>,
+    pub sensitive_data: Option<Vec<String>>,
+    pub description: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct AttackResult{
-    label: Option<String>,
-    confidence: Option<f64>,
-    attack_level: Option<String>,
-    description: Option<String>,
+    pub label: Option<String>,
+    pub confidence: Option<f64>,
+    pub attack_level: Option<String>,
+    pub description: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Advice{
-    answer: Option<String>,
-    hit_label: Option<String>,
-    hit_lib_name: Option<String>,
+    pub answer: Option<String>,
+    pub hit_label: Option<String>,
+    pub hit_lib_name: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct CustomizedHit{
-    lib_name: Option<String>,
-    key_words: Option<String>,
+    pub lib_name: Option<String>,
+    pub key_words: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Result{
-    label: Option<String>,
-    confidence: Option<f64>,
-    risk_words: Option<String>,
-    description: Option<String>,
-    customized_hit: Option<Vec<CustomizedHit>>
+    pub label: Option<String>,
+    pub confidence: Option<f64>,
+    pub risk_words: Option<String>,
+    pub description: Option<String>,
+    pub customized_hit: Option<Vec<CustomizedHit>>
 }
 
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Data {
-    score: Option<f64>,
-    risk_level: Option<String>,
-    data_id: Option<String>,
-    sensitive_level: Option<String>,
-    attack_level: Option<String>,
-    manual_task_id: Option<String>,
-    detected_language: Option<String>,
-    translated_content: Option<String>,
-    result: Option<Vec<Result>>,
-    advice: Option<Vec<Advice>>,
-    attack_result: Option<Vec<AttackResult>>,
-    sensitive_result: Option<Vec<SensitiveResult>>,
+    pub score: Option<f64>,
+    pub risk_level: Option<String>,
+    pub data_id: Option<String>,
+    pub sensitive_level: Option<String>,
+    pub attack_level: Option<String>,
+    pub manual_task_id: Option<String>,
+    pub detected_language: Option<String>,
+    pub translated_content: Option<String>,
+    pub result: Option<Vec<Result>>,
+    pub advice: Option<Vec<Advice>>,
+    pub attack_result: Option<Vec<AttackResult>>,
+    pub sensitive_result: Option<Vec<SensitiveResult>>,
 }
 
 
@@ -95,10 +95,10 @@ pub struct Data {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct TextCheckResponse {
-    request_id: Option<String>,
-    code: Option<i32>,
-    message: Option<String>,
-    data: Option<Data>,
+    pub request_id: Option<String>,
+    pub code: Option<i32>,
+    pub message: Option<String>,
+    pub data: Option<Data>,
 }
 
 

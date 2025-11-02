@@ -11,11 +11,11 @@ use sha1::Sha1; // 或者 sha2::Sha256
 /// 发起审核请求的客户端。
 /// 建议将access_key保存到配置文件，从配置文件读取。
 pub struct ModerationClient {
-    http: HttpClient,
-    endpoint: String,
-    access_key_id: String,
-    access_key_secret: String,
-    version: String,
+    pub http: HttpClient,
+    pub endpoint: String,
+    pub access_key_id: String,
+    pub access_key_secret: String,
+    pub version: String,
 }
 
 impl ModerationClient {
