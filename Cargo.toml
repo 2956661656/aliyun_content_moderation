@@ -8,6 +8,13 @@ repository = "https://github.com/2956661656/aliyun_content_moderation"
 license = "Apache-2.0"  # 必填，至少一种开源协议
 keywords = ["ali", "阿里", "阿里云", "aliyun", "alicloud"]
 categories = ["development-tools::build-utils"]
+include = [
+    "examples/*",
+    "src/**/*",
+    "Cargo.toml",
+    "README.md",
+    "LICENSE",
+]
 
 [dependencies]
 reqwest = { version = "0.12.24", features = ["json", "gzip", "brotli", "rustls-tls"] }
