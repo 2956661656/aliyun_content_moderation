@@ -1,6 +1,6 @@
 [package]
 name = "aliyun_content_moderation"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = ["Hjerau <2956661656@qq.com>"]
 description = "这是一个简易版的 Rust 客户端，用于以 HTTPS 原生方式调用阿里云内容安全（文本/图片/音频/视频）相关接口。"

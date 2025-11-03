@@ -106,7 +106,7 @@ impl ModerationClient {
         let request = self.http.post(url);
 
         let resp = request.send().await.map_err(|e|{
-            error!("{}", e.to_string());
+            error!("发送审核请求时发生错误：{}，如果是 builder error，请检查url是否添加https://协议", e.to_string());
             ModerationError::Http(e.to_string())
         })?;
         let status = resp.status();
