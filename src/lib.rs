@@ -38,7 +38,7 @@ mod tests {
             app_config.access_key_secret,
             app_config.version
         );
-        let result = client.check_text("nickname_detection_pro", "去死吧你").await;
+        let result = client.check_text("chat_detection_pro", "电信诈骗").await;
 
         assert_eq!(result.is_ok(), true);
     }

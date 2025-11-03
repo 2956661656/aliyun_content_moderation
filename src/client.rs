@@ -38,7 +38,7 @@ impl ModerationClient {
         }
     }
 
-    fn build_query_params(&self, action: &str, scene: &str, parameters: &str)->String{
+    fn build_query_params(&self, action: &str, scene: &str, parameters: &str)->anyhow::Result<String>{
         // timestamp + nonce
         let timestamp = chrono::Utc::now().to_rfc3339();
         let nonce = uuid::Uuid::new_v4().to_string();
@@ -66,13 +66,13 @@ impl ModerationClient {
         let percent_encode_canonicalized_query_string = utf8_percent_encode(&canonicalized_query_string, URL_ENCODE_SET).to_string();
 
         let string_to_sign =
-            String::from_str("POST").unwrap() + "&" +
+            String::from_str("POST")? + "&" +
                 utf8_percent_encode("/", URL_ENCODE_SET).to_string().as_str()
                 + "&" + percent_encode_canonicalized_query_string.as_str();
 
         let mut mac = Hmac::<Sha1>::new_from_slice(
             (self.access_key_secret.clone()+"&")
-                .as_bytes()).unwrap();
+                .as_bytes())?;
         // 2. 输入待签名内容
         mac.update(string_to_sign.as_bytes());
         // 3. 计算出 HMAC 值（签名）
@@ -85,7 +85,7 @@ impl ModerationClient {
 
         let sign_query = format!("&Signature={signature_encoded}");
 
-        canonicalized_query_string+sign_query.as_str()
+        Ok(canonicalized_query_string+sign_query.as_str())
     }
 
     /// 文本审核
@@ -95,6 +95,11 @@ impl ModerationClient {
         let content = format!("{{ \"content\": \"{content}\" }}");
         // 签名
         let query = self.build_query_params("TextModerationPlus", scene, &content);
+
+        let query = match query {
+            Ok(data) => data,
+            Err(e) => return Err(ModerationError::Parse(format!("构建查询参数时发生错误: {}", e)))
+        };
 
         let url = format!("{}?{}", self.endpoint, query);
 
