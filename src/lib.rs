@@ -24,7 +24,7 @@ mod tests {
     use super::*; // 引入上层作用域（被测函数）
 
     #[tokio::test] // 标记为单元测试
-    async fn test_moderation() {
+    async fn test_text_moderation() {
 
         let config = Config::builder()
             .add_source(config::File::with_name("config.toml"))
@@ -39,6 +39,26 @@ mod tests {
             app_config.version
         );
         let result = client.check_text("chat_detection_pro", "电信诈骗").await;
+
+        assert_eq!(result.is_ok(), true);
+    }
+
+    #[tokio::test] // 标记为单元测试
+    async fn test_image_moderation() {
+
+        let config = Config::builder()
+            .add_source(config::File::with_name("config.toml"))
+            .build()
+            .unwrap();
+        let app_config: AppConfig = config.try_deserialize().unwrap();
+
+        let client = ModerationClient::new(
+            "https://green-cip.cn-beijing.aliyuncs.com",
+            app_config.access_key_id,
+            app_config.access_key_secret,
+            app_config.version
+        );
+        let result = client.check_image("baselineCheck", "").await;
 
         assert_eq!(result.is_ok(), true);
     }

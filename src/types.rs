@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-
+use serde_json::Value;
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct AppConfig {
@@ -16,13 +16,13 @@ pub struct CommonRequestMeta<'a> {
 }
 
 // 文本审核请求
-#[derive(Debug, Serialize)]
-pub struct TextCheckRequest<'a> {
-    pub content: &'a str,
-    // 可扩展字段
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub scenes: Option<Vec<&'a str>>,
-}
+// #[derive(Debug, Serialize)]
+// pub struct TextCheckRequest<'a> {
+//     pub content: &'a str,
+//     // 可扩展字段
+//     #[serde(skip_serializing_if = "Option::is_none")]
+//     pub scenes: Option<Vec<&'a str>>,
+// }
 
 
 
@@ -63,7 +63,7 @@ pub struct CustomizedHit{
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct Result{
+pub struct TextCheckResult {
     pub label: Option<String>,
     pub confidence: Option<f64>,
     pub risk_words: Option<String>,
@@ -71,10 +71,13 @@ pub struct Result{
     pub customized_hit: Option<Vec<CustomizedHit>>
 }
 
-
+///使用建议： 做好判断再使用详细字段
+///    if  data.label.is_some() &&
+///        data.label.unwrap().as_str() != "nonLabel" &&
+///        data.[other_fields].unwrap() {}
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct Data {
+pub struct TextCheckData {
     pub score: Option<f64>,
     pub risk_level: Option<String>,
     pub data_id: Option<String>,
@@ -83,7 +86,7 @@ pub struct Data {
     pub manual_task_id: Option<String>,
     pub detected_language: Option<String>,
     pub translated_content: Option<String>,
-    pub result: Option<Vec<Result>>,
+    pub result: Option<Vec<TextCheckResult>>,
     pub advice: Option<Vec<Advice>>,
     pub attack_result: Option<Vec<AttackResult>>,
     pub sensitive_result: Option<Vec<SensitiveResult>>,
@@ -98,26 +101,49 @@ pub struct TextCheckResponse {
     pub request_id: String,
     pub code: i32,
     pub message: String,
-    pub data: Data,
+    pub data: TextCheckData,
 }
 
 
 
-// 图片审核请求（示例）
-#[derive(Debug, Serialize)]
-pub struct ImageTask<'a> {
-    /// 图片 URL 或 Base64（按阿里云要求填）
-    pub url: Option<&'a str>,
-    pub data_base64: Option<&'a str>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub scenes: Option<Vec<&'a str>>,
+// 图片审核请求
+// #[derive(Debug, Serialize)]
+// pub struct ImageTask<'a> {
+//     /// 图片 URL 或 Base64（按阿里云要求填）
+//     pub url: Option<&'a str>,
+//     pub data_base64: Option<&'a str>,
+//     #[serde(skip_serializing_if = "Option::is_none")]
+//     pub scenes: Option<Vec<&'a str>>,
+// }
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ImageCheckResult {
+    pub label: Option<String>,
+    pub confidence: Option<f64>,
+    pub description: Option<String>,
+    pub risk_level: Option<String>,
+}
+
+///ext 内容太多且作者用不上，你们可以自己扩展需要的，或者直接使用"[]"运算符获取。
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ImageCheckData {
+    pub data_id: Option<String>,
+    pub result: Option<Vec<ImageCheckResult>>,
+    pub risk_level: Option<String>,
+    pub ext: Option<Value>,
+    pub manual_task_id: Option<String>,
+
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct ImageCheckResponse {
-    pub code: Option<i32>,
-    pub msg: Option<String>,
-    pub data: Option<serde_json::Value>,
+    pub request_id: String,
+    pub code: i32,
+    pub msg: String,
+    pub data: ImageCheckData,
 }
 
 // 音频/视频等可按需扩展

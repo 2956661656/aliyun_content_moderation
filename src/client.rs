@@ -1,11 +1,13 @@
 use std::str::FromStr;
 use crate::error::ModerationError;
 use crate::types::*;
-use anyhow::Result;
+// use anyhow::Result;
+use serde_json::{Map, Value};
 use reqwest::Client as HttpClient;
 use hmac::{Hmac, Mac};
 use log::error;
 use percent_encoding::{utf8_percent_encode, AsciiSet, NON_ALPHANUMERIC};
+use serde_json::json;
 use sha1::Sha1; // 或者 sha2::Sha256
 
 /// 发起审核请求的客户端。
@@ -88,20 +90,28 @@ impl ModerationClient {
         Ok(canonicalized_query_string+sign_query.as_str())
     }
 
-    /// 文本审核
-    /// `scene`: 使用场景。示例：`nickname_detection_pro`，具体需要参考阿里云文档：`https://help.aliyun.com/document_detail/464388.html?scm=20140722.H_464388._.OR_help-T_cn~zh-V_1`
-    /// `content`: 具体需要审核的文本内容。
-    pub async fn check_text(&self, scene: &str, content: &str) -> Result<TextCheckResponse, ModerationError> {
-        let content = format!("{{ \"content\": \"{content}\" }}");
-        // 签名
-        let query = self.build_query_params("TextModerationPlus", scene, &content);
+    fn build_params(params: Vec<(&str, Value)>) -> String {
+        let mut obj = Map::new();
+        for (key, value) in params {
+            obj.insert(key.to_string(), value);
+        }
+        Value::Object(obj).to_string()
+    }
 
+    fn build_url(endpoint: &str, query: &str) -> String {
+        format!("{}?{}", endpoint, query)
+    }
+
+    async fn handle_check(&self, action: &str, scene:&str, params: String) -> Result<String, ModerationError> {
+        // 签名
+        let query = self.build_query_params(action, scene, &*params);
         let query = match query {
             Ok(data) => data,
             Err(e) => return Err(ModerationError::Parse(format!("构建查询参数时发生错误: {}", e)))
         };
 
-        let url = format!("{}?{}", self.endpoint, query);
+        // let url = format!("{}?{}", self.endpoint, query);
+        let url = Self::build_url(&self.endpoint, &query);
 
         let request = self.http.post(url);
 
@@ -111,19 +121,50 @@ impl ModerationClient {
         })?;
         let status = resp.status();
         let text = resp.text().await.map_err(|e| ModerationError::Http(e.to_string()))?;
+
         if !status.is_success() {
             return Err(ModerationError::Http(format!("status {} body {}", status, text)));
         }
+
+        Ok(text)
+    }
+
+    /// 文本审核
+    /// `scene`: 使用场景。示例：`nickname_detection_pro`，具体需要参考阿里云文档：`https://help.aliyun.com/document_detail/464388.html?scm=20140722.H_464388._.OR_help-T_cn~zh-V_1`
+    /// `content`: 具体需要审核的文本内容。
+    pub async fn check_text(&self, scene: &str, content: &str) -> Result<TextCheckResponse, ModerationError> {
+        // let content = format!("{{ \"content\": \"{content}\" }}");
+        let content = Self::build_params(vec![
+            ("content", json!(content))
+        ]);
+        let result = self.handle_check("TextModerationPlus", scene, content).await;
+        let text = match result {
+            Ok(text) => text,
+            Err(err) => return Err(err)
+        };
         let parsed: TextCheckResponse = serde_json::from_str(&text).map_err(|e|
             ModerationError::Parse(e.to_string())
         )?;
         Ok(parsed)
     }
 
-    // 图片检查（示例）
-    // pub async fn check_image(&self, tasks: Vec<ImageTask<'_>>) -> Result<ImageCheckResponse, ModerationError> {
-    //
-    // }
+    /// 图片审核
+    pub async fn check_image(&self, service: &str, img_uri: &str) -> Result<ImageCheckResponse, ModerationError> {
+        let params = Self::build_params(vec![
+            ("imageUrl", json!(img_uri)),
+            // ("dataId", json!())//可选
+            //"referer"：referer 请求头，用于防盗链等场景，可选。
+        ]);
+        let result = self.handle_check("ImageModeration", service, params).await;
+        let text = match result {
+            Ok(text) => text,
+            Err(err) => return Err(err)
+        };
+        let parsed: ImageCheckResponse = serde_json::from_str(&text).map_err(|e|
+            ModerationError::Parse(e.to_string())
+        )?;
+        Ok(parsed)
+    }
 
     // TODO: check_audio, check_video, 支持分片、上传到 OSS 后回调检查等
 }
