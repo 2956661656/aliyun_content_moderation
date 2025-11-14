@@ -101,7 +101,7 @@ pub struct TextCheckResponse {
     pub request_id: String,
     pub code: i32,
     pub message: String,
-    pub data: TextCheckData,
+    pub data: Option<TextCheckData>,
 }
 
 
@@ -143,7 +143,7 @@ pub struct ImageCheckResponse {
     pub request_id: String,
     pub code: i32,
     pub msg: String,
-    pub data: ImageCheckData,
+    pub data: Option<ImageCheckData>,
 }
 
 // 音频/视频等可按需扩展

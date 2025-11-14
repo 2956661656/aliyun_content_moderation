@@ -160,8 +160,10 @@ impl ModerationClient {
             Ok(text) => text,
             Err(err) => return Err(err)
         };
-        let parsed: ImageCheckResponse = serde_json::from_str(&text).map_err(|e|
+        let parsed: ImageCheckResponse = serde_json::from_str(&text).map_err(|e| {
+            println!("{}", e.to_string());
             ModerationError::Parse(e.to_string())
+        }
         )?;
         Ok(parsed)
     }

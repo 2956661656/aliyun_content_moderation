@@ -58,7 +58,8 @@ mod tests {
             app_config.access_key_secret,
             app_config.version
         );
-        let result = client.check_image("baselineCheck", "").await;
+        let result = client.check_image("baselineCheck",
+                                        "https://www.imageoss.com/images/2025/11/14/__206c8baf7092d8f3d.png").await;
 
         assert_eq!(result.is_ok(), true);
     }
